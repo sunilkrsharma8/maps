@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>CountrySelect</title>
+		<link rel="stylesheet" href="leaflet.css"/>
+		<script src="leaflet.js"></script>
+		<script src="Leaflet.CountrySelect.js"></script>
+	</head>
+	
+	<style>
+		html, body, #map {
+			padding:0px;
+			margin:0px;
+			height:100%;
+			width:80%;
+		}
+	</style>
+	
+	<script>
+		function init(){			
+			var baseLayer = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',{attribution: 'Tiles &copy; CartoDB'});
+
+			var map = L.map("map",{layers: [baseLayer], center: [26.3927, 49.9777], zoom: 3});
+			var select = L.countrySelect({exclude:"French Southern and Antarctic Lands"});
+
+			select.addTo(map);
+			
+			select.on('change', function(e){
+				if (e.feature === undefined){ //Do nothing on title
+					return;
+				}
+				var country = L.geoJson(e.feature);
+				if (this.previousCountry != null){
+					map.removeLayer(this.previousCountry);
+				}
+				this.previousCountry = country;
+
+				map.addLayer(country);
+				map.fitBounds(country.getBounds());
+				
+			});
+		}
+	</script>
+
+	<body onload="init()">
+		<div id="map"></div>
+	</body>
+</html>
